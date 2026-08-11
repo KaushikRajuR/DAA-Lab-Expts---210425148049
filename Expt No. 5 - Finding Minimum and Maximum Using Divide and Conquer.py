@@ -1,0 +1,55 @@
+import random
+
+comparison_count = 0
+
+def min_max_dc(arr, low, high):
+    global comparison_count
+
+    if low == high:
+        return arr[low], arr[low]
+
+    if high == low + 1:
+        comparison_count += 1
+        if arr[low] < arr[high]:
+            return arr[low], arr[high]
+        return arr[high], arr[low]
+
+    mid = (low + high) // 2
+    lmin, lmax = min_max_dc(arr, low, mid)
+    rmin, rmax = min_max_dc(arr, mid + 1, high)
+
+    comparison_count += 1
+    overall_min = lmin if lmin < rmin else rmin
+
+    comparison_count += 1
+    overall_max = lmax if lmax > rmax else rmax
+
+    return overall_min, overall_max
+
+
+def min_max_naive(arr):
+    mn, mx = arr[0], arr[0]
+    comps = 0
+
+    for x in arr[1:]:
+        comps += 1
+        if x < mn:
+            mn = x
+        comps += 1
+        if x > mx:
+            mx = x
+
+    return mn, mx, comps
+
+
+# TEST
+arr = [3, 1, 7, 4, 9, 2, 8, 5, 6, 0]
+comparison_count = 0
+mn, mx = min_max_dc(arr, 0, len(arr) - 1)
+dc_comps = comparison_count
+
+_, _, naive_comps = min_max_naive(arr)
+
+print("Min:", mn, "Max:", mx)
+print("D&C Comparisons:", dc_comps)
+print("Naive Comparisons:", naive_comps)
