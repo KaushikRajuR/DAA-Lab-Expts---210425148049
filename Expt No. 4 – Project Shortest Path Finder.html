@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Metro Route Navigator</title>
+<style>
+  :root {
+    --bg-color: #fdf6f0;       /* Soft Light Peach */
+    --card-bg: #ffffff;        /* Crisp White Container */
+    --accent-dark: #3a2238;    /* Deep Plum / Dark Violet */
+    --accent-glow: #522d50;    /* Dark Plum Hover */
+    --accent-light: #e0b0d5;   /* Subtle Lavender-Peach Accent */
+    --text-primary: #2d1a2c;   /* Deep Slate-Violet Text */
+    --text-muted: #735d72;     /* Soft Muted Label Text */
+    --border-color: #f2cc8f;   /* Soft Peach Border */
+    --panel-bg: #fffbf7;       /* Off-White Panel */
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    padding: 40px 20px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 850px;
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: 0 12px 32px rgba(58, 34, 56, 0.08);
+    border: 1px solid rgba(242, 204, 143, 0.5);
+    overflow: hidden;
+  }
+
+  .header {
+    background: linear-gradient(135deg, var(--accent-dark), var(--accent-glow));
+    color: #fff;
+    padding: 28px 24px;
+    text-align: center;
+  }
+
+  .header h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .header p {
+    margin: 8px 0 0;
+    font-size: 0.95rem;
+    opacity: 0.85;
+    color: #f9ecec;
+  }
+
+  .content {
+    padding: 28px;
+  }
+
+  .panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(58, 34, 56, 0.08);
+    color: var(--accent-dark);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+  }
+
+  select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+
+  select:focus {
+    border-color: var(--accent-dark);
+    box-shadow: 0 0 0 3px rgba(58, 34, 56, 0.1);
+  }
+
+  button {
+    width: 100%;
+    margin-top: 16px;
+    padding: 13px;
+    border: none;
+    border-radius: 8px;
+    background: var(--accent-dark);
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(58, 34, 56, 0.2);
+  }
+
+  button:hover {
+    background: var(--accent-glow);
+    transform: translateY(-1px);
+  }
+
+  .table-container {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    font-size: 0.9rem;
+  }
+
+  th {
+    background: var(--accent-dark);
+    color: #fff;
+    padding: 14px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: center;
+  }
+
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(242, 204, 143, 0.4);
+    text-align: center;
+    color: var(--text-primary);
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:nth-child(even) {
+    background: #fffbf7;
+  }
+
+  .route-text {
+    font-weight: 600;
+    color: var(--accent-dark);
+  }
+
+  .footer {
+    text-align: center;
+    padding: 16px;
+    background: var(--panel-bg);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border-color);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h2>🚇 Metro Route Navigator</h2>
+    <p>Shortest Path Visualization using Dijkstra's Algorithm</p>
+  </div>
+
+  <div class="content">
+    <div class="panel">
+      <div class="badge">Route Planner</div>
+      <label for="src">Choose Starting Station</label>
+      <select id="src">
+        <option value="0">Downtown Hub</option>
+        <option value="1">Financial District</option>
+        <option value="2">University Campus</option>
+        <option value="3">Harbor Terminal</option>
+        <option value="4">Science Center</option>
+        <option value="5">Stadium Complex</option>
+      </select>
+      <button onclick="displayRoutes()">Find Shortest Routes</button>
+    </div>
+
+    <div class="table-container">
+      <table id="tbl">
+        <tr>
+          <th>Destination</th>
+          <th>Distance (km)</th>
+          <th>Best Route</th>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">Metro Connectivity Analysis System</div>
+</div>
+
+<script>
+const stations = [
+  "Downtown Hub",
+  "Financial District",
+  "University Campus",
+  "Harbor Terminal",
+  "Science Center",
+  "Stadium Complex",
+  "Airport Express"
+];
+
+const graph = {
+  0: [[1, 2], [2, 4]],
+  1: [[2, 1], [3, 5], [4, 3]],
+  2: [[3, 2], [5, 6]],
+  3: [[4, 2], [6, 4]],
+  4: [[5, 3], [6, 5]],
+  5: [[6, 2]],
+  6: []
+};
+
+function compute(source) {
+  let dist = Array(stations.length).fill(Infinity);
+  let prev = Array(stations.length).fill(null);
+  let vis = Array(stations.length).fill(false);
+  dist[source] = 0;
+
+  while (true) {
+    let u = -1;
+    for (let i = 0; i < stations.length; i++) {
+      if (!vis[i] && (u == -1 || dist[i] < dist[u])) u = i;
+    }
+    if (u == -1 || dist[u] === Infinity) break;
+    vis[u] = true;
+    for (const [v, w] of graph[u]) {
+      if (dist[u] + w < dist[v]) {
+        dist[v] = dist[u] + w;
+        prev[v] = u;
+      }
+    }
+  }
+  return { dist, prev };
+}
+
+function route(prev, node) {
+  let arr = [];
+  while (node != null) {
+    arr.push(stations[node]);
+    node = prev[node];
+  }
+  return arr.reverse().join(" ➜ ");
+}
+
+function displayRoutes() {
+  const res = compute(parseInt(document.getElementById("src").value));
+  const tbl = document.getElementById("tbl");
+  tbl.innerHTML = "<tr><th>Destination</th><th>Distance (km)</th><th>Best Route</th></tr>";
+  
+  for (let i = 0; i < stations.length; i++) {
+    let r = tbl.insertRow();
+    r.insertCell().textContent = stations[i];
+    r.insertCell().textContent = res.dist[i] === Infinity ? "INF" : res.dist[i] + " km";
+    
+    let routeCell = r.insertCell();
+    if (res.dist[i] === Infinity) {
+      routeCell.textContent = "No Route";
+    } else {
+      routeCell.innerHTML = `<span class="route-text">${route(res.prev, i)}</span>`;
+    }
+  }
+}
+</script>
+
+</body>
+</html>
